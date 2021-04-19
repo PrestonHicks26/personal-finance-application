@@ -22,7 +22,7 @@ class Finance:
         self.recurringExpenseDict = {}
 
         self.budgetCategoryDict = {}  # budget categories and their balances
-        self.budgetDict = {"default": {}}  # type of budget and each category's percentage
+        self.budgetDict = {"default": {"balance": 0}, }  # type of budget and each category's percentage
 
         self.moneyTypeDict = {
             "Cash": 0,
@@ -78,13 +78,13 @@ class Finance:
 
     #ie. divide income into different categories
     def addBudgetCategory(self, id, balance):
-        self.budgetCategoryDict[id["balance"]] = balance
+        self.budgetCategoryDict[id] = {"balance": balance}
 
     def removeBudgetCategory(self, id):
         self.budgetCategoryDict.pop(id)
 
     def setPercentage(self, id, percentage):
-        self.budgetCategoryDict[id["percentage"]] = percentage
+        self.budgetCategoryDict[id]["percentage"] = percentage
 
     def addBudget(self, id, percentages):
         #percentages is a dictionary listing each budget category and a corresponding percentage
@@ -95,27 +95,28 @@ class Finance:
 
     def applyBudget(self, id):
         for category in self.budgetCategoryDict:
-            self.budgetCategoryDict[category["percentage"]] = self.budgetDict[id["percentage"]]
+            self.budgetCategoryDict[category]["percentage"] = self.budgetDict[id["percentage"]]
 
     #ie. gift card, bank account, paper money, ect.
     #find better method name
-    def addMoneyType(self):
+    def addMoneyType(self, id, balance):
         #adds item to dict consisting of type and amount of that type
         #ex. gift cards
-        pass
+        self.moneyTypeDict[id] = {"total": balance}
 
-    def addMoneySubType(self):
+    def addMoneySubType(self, parent, id, balance):
         # adds an instance of a money type, creating a subdictionary
         #ex. visa gift card exp. 6/24
         #ex.self.moneyTypeDict["Gift Cards"] = {vida gift card: 100}
-        pass
+        self.moneyTypeDict[parent][id] = balance
+        self.moneyTypeDict[parent]["total"] += balance
 
-    def addGoal(self):
-        #can call setBudget and addBudgetCategory methods
-        pass
+    def addGoal(self, id, goal, dueDate, budget):
+        #can call setBudget method
+        self.goalDict[id] = {"goal": goal, "dueDate": dueDate, "budget": budget}
 
-    def removeGoal(self):
-        pass
+    def removeGoal(self, id):
+        self.goalDict.pop(id)
 
     def checkProgress(self):
         pass
@@ -140,11 +141,8 @@ class Finance:
         if not (self.recentSaves or self.lastSave):
             self.saveAs()
 
-
-    def saveAs(self, address, fileName):
-        save = open("{}/{}".format(address, fileName))
-
-        #save recurringIncomeDict
+        save = open(self.lastSave)
+        # save recurringIncomeDict
         save.write("recurringIncomeDict")
         for i in self.recurringIncomeDict:
             save.write("-{}".format(i))
@@ -152,7 +150,7 @@ class Finance:
             save.write("--{}".format(self.recurringIncomeDict.get(i).date))
             save.write("--{}".format(self.recurringIncomeDict.get(i).frequency))
 
-        #save recurringExpenseDict
+        # save recurringExpenseDict
         save.write("recurringExpenseDict")
         for i in self.recurringExpenseDict:
             save.write("-{}".format(i))
@@ -160,23 +158,35 @@ class Finance:
             save.write("--{}".format(self.recurringExpenseDict.get(i).date))
             save.write("--{}".format(self.recurringExpenseDict.get(i).frequency))
 
-        #save budgetCategoryDict
+        # save budgetCategoryDict
+        save.write("budgetCategoryDict")
         for i in self.budgetCategoryDict:
             pass
-        #save budgetDict
 
-        #save moneyTypeDict
+        # save budgetDict
+        save.write("budgetDict")
 
-        #save goalDict
+        # save moneyTypeDict
+        save.write("moneyTypeDict")
 
+        # save goalDict
+        save.write("goalDict")
 
         save.close()
-        #when saving dictionary use - to indicate level
-        #ex.
-        #-trial1
-        #--distance
-        #--speed
-        #trial2
+        # when saving dictionary use - to indicate level
+        # ex.
+        # -trial1
+        # --distance
+        # --speed
+        # trial2
+
+
+    def saveAs(self, address, fileName):
+        path = "{}/{}".format(address, fileName)
+        save = open(path)
+        self.lastSave = path
+        self.recentSaves.append(path)
+        self.save()
 
 
 
