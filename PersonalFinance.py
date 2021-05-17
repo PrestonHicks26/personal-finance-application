@@ -142,47 +142,48 @@ class Finance:
             self.saveAs()
 
         save = open(self.lastSave)
-        # save recurringIncomeDict
-        save.write("recurringIncomeDict")
+        save.write("recurringIncomeDict\n")
         for i in self.recurringIncomeDict:
             save.write("-{}".format(i))
             save.write("--{}".format(self.recurringIncomeDict.get(i).moneyType))
             save.write("--{}".format(self.recurringIncomeDict.get(i).date))
             save.write("--{}".format(self.recurringIncomeDict.get(i).frequency))
 
-        # save recurringExpenseDict
-        save.write("recurringExpenseDict")
+        save.write("recurringExpenseDict\n")
         for i in self.recurringExpenseDict:
             save.write("-{}".format(i))
             save.write("--{}".format(self.recurringExpenseDict.get(i).moneyType))
             save.write("--{}".format(self.recurringExpenseDict.get(i).date))
             save.write("--{}".format(self.recurringExpenseDict.get(i).frequency))
 
-        # save budgetCategoryDict
-        save.write("budgetCategoryDict")
+        save.write("budgetCategoryDict\n")
         for i in self.budgetCategoryDict:
-            pass
+            save.write("-{}:{}".format(i, self.budgetCategoryDict.get(i)))
 
-        # save budgetDict
-        save.write("budgetDict")
+        save.write("budgetDict\n")
+        for i in self.budgetDict:
+            save.write("-{}:{}".format(i, self.budgetDict.get(i)))
 
-        # save moneyTypeDict
-        save.write("moneyTypeDict")
+        save.write("moneyTypeDict\n")
+        for i in self.moneyTypeDict:
+            save.write("-{}:{}".format(i, self.moneyTypeDict.get(i)))
 
-        # save goalDict
-        save.write("goalDict")
+        save.write("goalDict\n")
+        for i in self.goalDict:
+            save.write("-{}:{}".format(i, self.goalDict.get(i)))
 
         save.close()
-        # when saving dictionary use - to indicate level
+        # when saving dictionary use - to indicate level of subdictionary
         # ex.
         # -trial1
         # --distance
         # --speed
         # trial2
+        #when saving dictionary of objects use - to indicate attributes of object
 
 
     def saveAs(self, address, fileName):
-        path = "{}/{}".format(address, fileName)
+        path = "{}\{}".format(address, fileName)
         save = open(path)
         self.lastSave = path
         self.recentSaves.append(path)
@@ -190,8 +191,35 @@ class Finance:
 
 
 
-    def loadSave(self):
-        pass
+    def loadSave(self, address):
+        save = open(address, "r")
+        current = ""
+
+        for line in save:
+            if "recurringIncomeDict" in line:
+                current = "recurringIncomeDict"
+            if "recurringExpenseDict" in line:
+                current = "recurringExpenseDict"
+            if "budgetCategoryDict" in line:
+                current = "budgetCategoryDict"
+            if "budgetDict" in line:
+                current = "budgetDict"
+            if "moneyTypeDict" in line:
+                current = "moneyTypeDict"
+            if "goalDict" in line:
+                current = "goalDict"
+            # load recurring income
+
+            #load recurring expense
+
+            #load budget categories
+
+            #load budgets
+
+            #load money types
+
+            #load goals
+        save.close()
 
 
     @staticmethod
