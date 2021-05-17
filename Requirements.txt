@@ -1,0 +1,70 @@
+Personal Finance Project
+
+Note: Original requirements doc was written for a school project with another student.
+      This is a revised version of those requirements to fit my personal needs for personal finance software,
+      removes some unnescessary or infeasible requirements, and adds others that we hadn't thought of before
+
+UI Requirements:
+- elements properly resize and reposition when window changes size
+- name off app at top of screen
+- bold, easy to read text that stands out from background
+- goals
+    - indicator on top bar of screen, shape that fills up as progress towards goal continues
+    - screen with more thorough data visualization
+- different screens
+    - accessed by clicking tabs along top of screen
+    - home screen: page with summary of all finances
+    - income and expenses page
+    - page for setting up goals and seeing data visualization
+    - page where user can add links to useful pages
+        - display website in program?
+
+Functional Requirements:
+- ability to input forms of income
+- automatically divide money into different user defined categories
+    - Ie. every month put 30% into long term savings
+    - Set up different percentages for different circumstances
+    - Choose from a drop down menu the relevant circumstances and automatically income is divided differently
+- monthly payments
+    - label where payments are going
+- subtract one time payments
+- goals system
+    - track how close user is to certain spending or savings goals
+    - ability to set it up so that, until goal is met, income divisions are changed in some way
+- alerts
+    - payment coming up
+    - income recieved
+    - certain section of money running low
+    - alert if close to goal
+    - alert if goal met
+    - different forms of money (paper vs bank account vs gift cards)
+- includes a program that runs on pc start up which checks the date and the state of finances in order to
+update finances and send alerts
+- program state file
+    - loads when program started
+    - new one created if it doesn't exist
+- save file
+    - loads most recent file on start up
+    - sets initial files if no file exists
+    - save function
+    - save as function
+- create new profile
+    - creates new save file w/ default values
+    - adds this new save to the list of recent saves
+    - sets this new save as the last save
+- home page which shows up when the program opens for the first time (detects no saves) or when current profile is
+closed
+- keyboard shortcuts
+    - tooltips that tell user shortcuts
+    - basic shortcuts:
+        - ctrl s
+        - ctrl z
+        - ctrl y
+        - ect.
+    - numbers on keyboard correspond to each tab
+
+Non Functional Requirements:
+- scalability: works across different os's
+- clean, modern feeling background and UI
+- good performance, algorithms are efficient and don't take too much time
+- few bugs
