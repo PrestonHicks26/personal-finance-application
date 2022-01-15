@@ -31,6 +31,9 @@ Functional Requirements:
 - goals system
     - track how close user is to certain spending or savings goals
     - ability to set it up so that, until goal is met, income divisions are changed in some way
+    - user can see time until due date
+    - show how far user is from achieving goal
+    - show progress of user
 - alerts
     - payment coming up
     - income recieved
