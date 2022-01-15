@@ -20,8 +20,8 @@ class Finance:
         self.saves = []
         self.recentSaves = [] # when save is saved, remove it from list, and then append back to the end, if list gets too long, remove oldest save
         self.openSave = ''
-        if path.exists("program_state.json"):
-            with open("program_state.json", "r") as f:
+        if path.exists('program_state.json'):
+            with open('program_state.json', 'r') as f:
                 jsonList = json.load(f)
             self.lastSave = jsonList[0]
             self.saves = jsonList[1]
@@ -32,10 +32,10 @@ class Finance:
             self.recurringIncomeDict = {} # each item is a list where 0 is
             self.recurringExpenseDict = {}
             self.fundDict = {}  # funds (ie. college fund, personal spending, savings, ect.) and their balances
-            self.budgetDict = {"default": {"balance": 0}, }  # type of budget and each category's percentage
+            self.budgetDict = {'default': {'balance': 0}, }  # type of budget and each category's percentage
             self.moneyTypeDict = {
-                "Cash": 0,
-                "Bank Account": 0
+                'Cash': 0,
+                'Bank Account': 0
             }
             self.goalDict = {}
             self.forcedBudget = False
@@ -66,13 +66,13 @@ class Finance:
 
     #ie. divide income into different categories
     def addFund(self, id, balance):
-        self.fundDict[id] = {"balance": balance}
+        self.fundDict[id] = {'balance': balance}
 
     def removeFund(self, id):
         self.fundDict.pop(id)
 
     def setPercentage(self, id, percentage):
-        self.fundDict[id]["percentage"] = percentage
+        self.fundDict[id]['percentage'] = percentage
 
     def addBudget(self, id, percentages):
         #percentages is a dictionary listing each budget category and a corresponding percentage
@@ -83,15 +83,15 @@ class Finance:
 
     def applyBudget(self, id):
         if self.forcedBudget:
-            print("One of your goals has you on a forced budget, are you sure you want to change it?")
+            print('One of your goals has you on a forced budget, are you sure you want to change it?')
             # spawn pop up box with yes and no buttons
             # temp code:
             if input() == 'y':
                 for category in self.fundDict:
-                    self.fundDict[category]["percentage"] = self.budgetDict[id["percentage"]]
+                    self.fundDict[category]['percentage'] = self.budgetDict[id['percentage']]
         else:
             for category in self.fundDict:
-                self.fundDict[category]["percentage"] = self.budgetDict[id["percentage"]]
+                self.fundDict[category]['percentage'] = self.budgetDict[id['percentage']]
 
 
     #ie. gift card, bank account, paper money, ect.
@@ -99,18 +99,51 @@ class Finance:
     def addMoneyType(self, id, balance):
         #adds item to dict consisting of type and amount of that type
         #ex. gift cards
-        self.moneyTypeDict[id] = {"total": balance}
+        self.moneyTypeDict[id] = {'total': balance}
 
     def addMoneySubType(self, parent, id, balance):
         # adds an instance of a money type, creating a subdictionary
         #ex. visa gift card exp. 6/24
-        #ex.self.moneyTypeDict["Gift Cards"] = {visa gift card: 100}
+        #ex.self.moneyTypeDict['Gift Cards'] = {visa gift card: 100}
         self.moneyTypeDict[parent][id] = balance
-        self.moneyTypeDict[parent]["total"] += balance
+        self.moneyTypeDict[parent]['total'] += balance
 
-    def addGoal(self, goal, value, dueDate, budget=None):
-        #can call setBudget method
-        self.goalDict[goal] = {"value": value, "dueDate": dueDate, "budget": budget}
+    def addFundGoal(self, goal, fund, value, day, month, year, budget=None):
+        # can call setBudget method
+        date = datetime.datetime.now()
+        self.goalDict[goal] = {'fund': fund,
+                               'value': value,
+                               'day': day,
+                               'month': month,
+                               'year': year,
+                               'startDay': date.day,
+                               'startMonth': date.month,
+                               'startYear': date.year,
+                               'startValue': self.fundDict[fund]['balance'],
+                               'budget': budget}
+        if budget is not None:
+            self.applyBudget(budget)
+            self.forcedBudget = True
+        for goal in self.goalDict:
+            if self.goalDict[goal]['budget'] != budget and self.goalDict[goal]['budget'] is not None:
+                print("This goal's budget conflicts with another goal's budget. Which would you like to keep?")
+                # open pop up window and display 'old' on one button and 'new' on the other
+                # if new pressed:
+                    # applyBudget(budget)
+
+    def addMoneyTypeGoal(self, goal, moneyType, value, day, month, year, budget=None):
+        # can call setBudget method
+        date = datetime.datetime.now()
+        self.goalDict[goal] = {'moneyType': moneyType,
+                               'value': value,
+                               'day': day,
+                               'month': month,
+                               'year': year,
+                               'startDay': date.day,
+                               'startMonth': date.month,
+                               'startYear': date.year,
+                               'startValue': self.moneyTypeDict[moneyType]['total'],
+                               'budget': budget}
         if budget is not None:
             self.applyBudget(budget)
             self.forcedBudget = True
@@ -128,15 +161,28 @@ class Finance:
             if self.goalDict[goal]['budget'] is not None:
                 self.forcedBudget = True
 
-    def checkProgress(self):
+    def checkTimeProgress(self, goal):
+        # 0 means before due date, 1 means currently due date, 2 means post due date
         date = datetime.datetime.now()
-        for goal in self.goalDict:
-            if date.year
+        if date.year < self.goalDict[goal]['year']\
+                or date.year == self.goalDict[goal]['year'] and date.month < self.goalDict[goal]['month']\
+                or date.year == self.goalDict[goal]['year'] and date.month == self.goalDict[goal]['month']\
+                and date.day == self.goalDict[goal]['day']:
+            return 0
+        if date.year == self.goalDict[goal]['year']\
+                and date.month == self.goalDict[goal]['month']\
+                and date.day < self.goalDict[goal]['day']:
+            return 1
+        else:
+            return 2
+
+    def checkMoneyProgress(self, goal):
+        pass
 
     def notification(self, notification):
-        if notification == "":
+        if notification == '':
             pass
-        if notification == "":
+        if notification == '':
             pass
 
 
@@ -148,9 +194,9 @@ class Finance:
     def save(self):
         self.lastSave = self.openSave
         if not (self.saves or self.lastSave):
-            print("Address: ")
+            print('Address: ')
             address = input()
-            print("File Name: ")
+            print('File Name: ')
             fileName = input()
             self.saveAs(address, fileName)
 
@@ -165,7 +211,7 @@ class Finance:
             json.dump(jsonDict, f)
 
     def saveAs(self, address, fileName):
-        path = "{}\\{}.json".format(address, fileName)
+        path = '{}\\{}.json'.format(address, fileName)
         save = open(path, 'w')
         save.close()
         self.lastSave = path
@@ -181,7 +227,7 @@ class Finance:
         self.recentSaves.append(address)  # makes sure most recent save is at end of list
         if len(self.recentSaves) > 3:
             self.recentSaves.pop(0)
-        with open(address, "r") as f:
+        with open(address, 'r') as f:
             jsonDict = json.load()
             self.recurringIncomeDict = jsonDict['recurringIncomeDict']
             self.recurringExpenseDict = jsonDict['recurringExpenseDict']
@@ -190,6 +236,36 @@ class Finance:
             self.moneyTypeDict = jsonDict['moneyTypeDict']
             self.goalDict = jsonDict['goalDict']
             self.forcedBudget = jsonDict['forcedBudget']
+
+    @staticmethod
+    def dateToDays(month, day, year):
+        days = day
+        for i in range(1, month + 1):
+            if i % 2 == 1:
+                days += 31
+            elif i % 2 == 0 and i != 2:
+                days += 30
+            else:
+                if year % 4 == 0:
+                    if year % 100 != 0:
+                        days += 29
+                    elif year % 400 == 0:
+                        days += 29
+                    else:
+                        days += 28
+                else:
+                    days += 28
+        for i in range(year):
+            if year % 4 == 0:
+                if year % 100 != 0:
+                    days += 366
+                elif year % 400 == 0:
+                    days += 366
+                else:
+                    days += 365
+            else:
+                days += 365
+        return days
 
     #def update(self):
 
